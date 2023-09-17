@@ -1,0 +1,48 @@
+
+
+builder.dockerfile needs to:
+    - download AFL++
+    - build AFL++ 
+    - build the shared library hook thing (which I will have to make!) and put it in specific location
+        has 'main' which looks like is called at initialisation 
+        looks to be a glue between libfuzzer's LLVMFuzzerTestOneInput and whatever your fuzzer does
+
+
+fuzzer.py:
+    build()
+        builds benchmark with modifications
+        should call build_benchmark to do this.
+        should set FUZZER_LIB to created fuzzer
+        every benchmark has 1 script build.sh that builds it 'vanilla'
+            make sure to use NO_SANITIZER_COMPAT_CFLAGS
+            this build script will link in FUZZER_LIB
+
+    run()
+        runs fuzzer!
+        should run fuzzer
+
+
+
+
+
+curl:
+    replace 
+andb %bh,(%rcx,%riz,2)
+    with
+andb (%rcx), %bh
+ 
+
+more generically:
+
+    1. binary can be built simply --binary
+    2. binary needs to be have modification on assembly and then gccd directly
+
+
+    maintain table of of weird binaries
+    for these binaries, have don't gen binary, only assembly.
+    then run custom code over produced assembly
+    then compile using custom command
+
+curl custom command:
+ -o out/curl_fuzzer_http /tmp/fileUWvq1G.s -ldl -lm -lpthread -lgcc_s -lc -lc -lc -lc -lc -no-pie -nostartfiles
+
