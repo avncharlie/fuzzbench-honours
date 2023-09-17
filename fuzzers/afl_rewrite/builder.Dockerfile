@@ -53,6 +53,7 @@ RUN touch /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
 RUN git clone -b fuzzbench git@github.com:avncharlie/afl-rewrite.git /afl-rewrite
+RUN cd /afl-rewrite && git pull
 
 # Build driver
 RUN cd /afl-rewrite/util && make 
