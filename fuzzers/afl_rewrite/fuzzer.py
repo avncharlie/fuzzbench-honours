@@ -8,9 +8,9 @@ from collections import namedtuple
 from fuzzers import utils
 from fuzzers.aflplusplus import fuzzer as aflplusplus_fuzzer
 
-def fixup_curl(asm_path):
+def fixup_riz_register(asm_path):
     '''
-    Fixes rewriter output from curl benchmark
+    Fixes rewriter output from curl and openssl benchmarks
 
     Replaces an instruction that references the %riz register with an
     equivalent instruction that doesn't use it.
@@ -75,20 +75,33 @@ def build():
     os.system('make -C /afl-rewrite fuzzbench')
 
     # handle edge cases / bugs in gtirb-pprinter to make some benchmarks work
-    current_benchmark = os.environ['benchmark']
+    try:
+        current_benchmark = os.environ['benchmark']
+    except KeyError:
+        current_benchmark = os.environ['BENCHMARK']
 
     # edge case handlers will modify and build rewritten asm needed 
     EdgeCaseHandler = namedtuple("EdgeCaseHandler", ["handler_func", "build_cmd"])
     edge_cases = {
         'curl_curl_fuzzer_http': EdgeCaseHandler(
-            fixup_curl, 
+            fixup_riz_register, 
             'gcc -o {output_binary} {fixed_asm} -ldl -lm -lpthread -lgcc_s -lc -no-pie -nostartfiles'
+        ),
+        'openssl_x509': EdgeCaseHandler(
+            fixup_riz_register, 
+            'gcc -o {output_binary} {fixed_asm} -ldl -lm -lpthread -lgcc_s -no-pie -nostartfiles'
+        ),
+        'systemd_fuzz-link-parser': EdgeCaseHandler(
+            # gtirb-pprinter doesn't generate compilation command correctly for
+            # this benchmark, so we do it ourselves.
+            lambda x: None, 
+            'gcc -o {output_binary} {fixed_asm} -l:libdl.so.2 -l:libm.so.6 -l:libsystemd-shared-251.so -l:libgcc_s.so.1 -l:libpthread.so.0 -l:libc.so.6 -L/out/src/shared -Wl,-rpath,/out/src/shared -no-pie -nostartfiles -no-pie -nostartfiles'
         )
     }
 
     if current_benchmark in edge_cases:
         # rewrite and generate asm
-        asm_path = f'{target_binary_path}.asm'
+        asm_path = f'{target_binary_path}.S'
         os.system(f'gtirb-pprinter /afl-rewrite/out/{target_binary_name}-afl.gtirb --asm {asm_path}')
 
         # fix generated asm as needed
@@ -105,9 +118,6 @@ def build():
         # generate binary (gtirb-pprinter generates assembly and will
         # automatically create a command to assemble generated asm)
         os.system(f'gtirb-pprinter /afl-rewrite/out/{target_binary_name}-afl.gtirb --binary {target_binary_path}')
-
-    # copy rewritten binary over original binary
-
 
 def fuzz(input_corpus, output_corpus, target_binary):
     ''' run benchmark. '''

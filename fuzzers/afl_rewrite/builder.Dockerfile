@@ -27,10 +27,15 @@ RUN apt-get update && \
         bison \
         libglib2.0-dev \
         libpixman-1-dev \
-        python3.9 \
-        python3-pip
+        python3.9
 
 # Install gtirb rewriting
+# Have to use the get-pip script to install pip instead of installing it
+#   through a package as otherwise the docker build fails when trying build the
+#   woff2_convert_woff2ttf_fuzzer benchmark due to a bugged pip installation
+#   No idea why.
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python3.9 get-pip.py
 RUN python3.9 -m pip install gtirb gtirb-rewriting
 
 # Download afl++
