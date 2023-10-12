@@ -1,6 +1,7 @@
 ''' Integration for afl-rewrite '''
 
 import os
+import json
 import shutil
 import subprocess
 from collections import namedtuple
@@ -28,6 +29,24 @@ def fixup_riz_register(asm_path):
 
     with open(asm_path, 'w') as f:
         f.write(fixed_asm)
+
+def get_stats(output_corpus, fuzzer_log):  # pylint: disable=unused-argument
+    """Gets fuzzer stats for AFL."""
+    # Get a dictionary containing the stats AFL reports.
+    stats_file = os.path.join(output_corpus, 'fuzzer_stats')
+    if not os.path.exists(stats_file):
+        print('Can\'t find fuzzer_stats')
+        return '{}'
+    with open(stats_file, encoding='utf-8') as file_handle:
+        stats_file_lines = file_handle.read().splitlines()
+    stats_file_dict = {}
+    for stats_line in stats_file_lines:
+        key, value = stats_line.split(': ')
+        stats_file_dict[key.strip()] = value.strip()
+
+    # Report to FuzzBench the stats it accepts.
+    stats = {'execs_per_sec': float(stats_file_dict['execs_per_sec'])}
+    return json.dumps(stats)
 
 def build():
     ''' Build benchmark. '''
