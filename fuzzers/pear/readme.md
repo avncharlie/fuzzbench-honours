@@ -1,0 +1,1 @@
+afl rewrite, persistent mode

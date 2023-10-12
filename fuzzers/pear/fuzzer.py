@@ -1,4 +1,4 @@
-''' Integration for afl-rewrite '''
+''' Integration for pear '''
 
 import os
 import json
