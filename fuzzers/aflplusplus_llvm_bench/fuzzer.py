@@ -14,7 +14,7 @@ def build():
     # move fuzzer to build directory
     shutil.copy('/afl/afl-fuzz', build_directory)
 
-    # set compilers to AFL fast compilers
+    # set compilers to AFL llvm compilers
     os.environ['CC'] = '/afl/afl-clang-fast'
     os.environ['CXX'] = '/afl/afl-clang-fast++'
 
@@ -22,6 +22,9 @@ def build():
     os.environ['CFLAGS'] = ' '.join(utils.NO_SANITIZER_COMPAT_CFLAGS)
     cxxflags = [utils.LIBCPLUSPLUS_FLAG] + utils.NO_SANITIZER_COMPAT_CFLAGS
     os.environ['CXXFLAGS'] = ' '.join(cxxflags)
+
+    # disable optimisation (to standardise benchmarks)
+    os.environ["AFL_DONT_OPTIMIZE"] = '1'
 
     # set map size to 64k (to standardise benchmarks)
     os.environ['AFL_MAP_SIZE'] = '65536'
