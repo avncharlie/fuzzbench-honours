@@ -32,22 +32,17 @@ RUN cd /afl && \
 
 # Copy zipr
 COPY --from=zipr_builder /zipr /zipr
-WORKDIR /zipr
 # install needed packages in builder image and setup zipr database
 RUN apt-get install -y lsb-release sudo
-RUN ./get-peasoup-packages.sh all
+RUN bash -c "cd /zipr && ./get-peasoup-packages.sh all"
 ENV USER=root
-RUN service postgresql start && ./postgres_setup.sh
+RUN bash -c "cd /zipr && service postgresql start && ./postgres_setup.sh"
 
 # Download and build zafl 
 RUN git clone --recurse-submodules https://git.zephyr-software.com/opensrc/zafl.git /zafl
-WORKDIR /zafl
 RUN apt-get install -y clang fakeroot dpkg
 RUN bash -c "cd /zipr && source ./set_env_vars && cd /zafl && source ./set_env_vars && scons"
 
 # Build driver
 ADD ./util /util
 RUN cd /util && make
-
-# restore workdir
-WORKDIR /src
