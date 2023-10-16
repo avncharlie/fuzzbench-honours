@@ -17,9 +17,18 @@ def build():
     # set options for LTO compiler
     os.environ['CC'] = '/afl/afl-clang-lto'
     os.environ['CXX'] = '/afl/afl-clang-lto++'
-    os.environ['RANLIB'] = 'llvm-ranlib'
-    os.environ['AR'] = 'llvm-ar'
-    os.environ['AS'] = 'llvm-as'
+    if os.path.isfile('/usr/local/bin/llvm-ranlib-13'):
+        os.environ['RANLIB'] = 'llvm-ranlib-13'
+        os.environ['AR'] = 'llvm-ar-13'
+        os.environ['AS'] = 'llvm-as-13'
+    elif os.path.isfile('/usr/local/bin/llvm-ranlib-12'):
+        os.environ['RANLIB'] = 'llvm-ranlib-12'
+        os.environ['AR'] = 'llvm-ar-12'
+        os.environ['AS'] = 'llvm-as-12'
+    else:
+        os.environ['RANLIB'] = 'llvm-ranlib'
+        os.environ['AR'] = 'llvm-ar'
+        os.environ['AS'] = 'llvm-as'
 
     # disable address santizer (to standardise benchmarks)
     os.environ['CFLAGS'] = ' '.join(utils.NO_SANITIZER_COMPAT_CFLAGS)

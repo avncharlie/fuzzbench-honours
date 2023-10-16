@@ -54,6 +54,9 @@ def build():
     print(f'Adding instrumentation (running command: {cmd}) ...')
     os.system(cmd)
 
+    if not os.path.isfile(f'/src/{target_binary_name}.afl'):
+        print('e9afl-instrumentation failed!')
+
     # copy instrumented binary over original
     os.system(f'cp /src/{target_binary_name}.afl {target_binary_path}')
 
