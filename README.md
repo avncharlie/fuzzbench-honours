@@ -1,5 +1,6 @@
 # ⚠️ NOTE ⚠️
 This is a fork of FuzzBench I used to evaluate PeAR for my honour's thesis. 
+See avncharlie/fuzzbench for a current version benchmarking the current version of PeAR.
 It isn't mantained. The PeAR fuzzer integration is currently broken 
 as it the github repo it is pulling from got renamed.
 
