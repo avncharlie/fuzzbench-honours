@@ -1,4 +1,4 @@
-# This is the version of FuzzBench I forked to benchmark PeAR for my thesis.
+# This is the version of FuzzBench I forked to benchmark PeAR for my thesis (in the add_afl_rewrite branch)
 # See avncharlie/fuzzbench for a current version .
 # FuzzBench: Fuzzer Benchmarking As a Service
 
