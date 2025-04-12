@@ -1,3 +1,5 @@
+# This is the version of FuzzBench I forked to benchmark PeAR for my thesis.
+# See avncharlie/fuzzbench for a current version .
 # FuzzBench: Fuzzer Benchmarking As a Service
 
 FuzzBench is a free service that evaluates fuzzers on a wide variety of
